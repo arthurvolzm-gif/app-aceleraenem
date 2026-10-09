@@ -1,0 +1,24 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    { "source": "/reda%C3%A7%C3%A3o", "destination": "/redacao", "permanent": false },
+    { "source": "/redação", "destination": "/redacao", "permanent": false },
+    { "source": "/mat%C3%A9rias", "destination": "/materias", "permanent": false },
+    { "source": "/matérias", "destination": "/materias", "permanent": false }
+  ],
+  "functions": {
+    "api/corrigir.js": { "maxDuration": 90 }
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/materias" },
+    { "source": "/escuro", "destination": "/materias" },
+    { "source": "/materias/escuro", "destination": "/materias" }
+  ],
+  "headers": [
+    { "source": "/sw.js", "headers": [ { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" } ] },
+    { "source": "/", "headers": [ { "key": "X-Robots-Tag", "value": "noindex" } ] },
+    { "source": "/escuro", "headers": [ { "key": "X-Robots-Tag", "value": "noindex" } ] },
+    { "source": "/(redacao|materias)(.*)", "headers": [ { "key": "X-Robots-Tag", "value": "noindex" } ] }
+  ]
+}
