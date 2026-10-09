@@ -5,13 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 <title>Plano ENEM</title>
 <meta name="theme-color" content="#0b1f4d" />
-<script>if(/\/escuro\/?$/.test(location.pathname)||/[?&]tema=escuro/.test(location.search)){document.write('<meta name="theme-color" content="#000000">');}</script>
+<script>if(!(/\/claro\/?$/.test(location.pathname)||/[?&]tema=claro/.test(location.search))){document.write('<meta name="theme-color" content="#000000">');}</script>
 <meta name="robots" content="noindex" />
 <link rel="manifest" href="/materias/manifest.json" />
 <link rel="stylesheet" href="/materias/app.css" />
 <script>
-/* versão escura: /materias/escuro (ou ?tema=escuro) */
-if(/\/escuro\/?$/.test(location.pathname)||/[?&]tema=escuro/.test(location.search)){document.documentElement.classList.add('escuro');document.write('<link rel="stylesheet" href="/shared/escuro-app.css">');}
+/* tema escuro é o padrão; a versão clara fica em /claro (ou ?tema=claro) */
+if(!(/\/claro\/?$/.test(location.pathname)||/[?&]tema=claro/.test(location.search))){document.documentElement.classList.add('escuro');document.write('<link rel="stylesheet" href="/shared/escuro-app.css">');}
 </script>
 <script src="/shared/config.js"></script>
 <script src="/shared/conta.js"></script>
