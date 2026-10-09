@@ -10,7 +10,7 @@
    - CRON_SECRET            segredo do agendador (?token=... ou Authorization: Bearer ...)
    - SUPABASE_URL, SUPABASE_SERVICE_KEY
    - VAPID_PUBLICA, VAPID_PRIVADA, VAPID_CONTATO (ex.: mailto:suporte@seudominio.com)
-   - SITE_URL (opcional, padrão https://aceleraenem.vercel.app)
+   - SITE_URL (opcional, padrão https://appaceleraenem.vercel.app)
 
    Quem agenda: GitHub Actions (.github/workflows/push.yml) ou cron-job.org, chamando a URL
    com o token. O fuso usado é America/Sao_Paulo.
@@ -52,7 +52,7 @@ export default async function handler(req, res) {
   if (!process.env.CRON_SECRET || token !== process.env.CRON_SECRET) return res.status(401).json({ erro: "token inválido" });
   if (!process.env.VAPID_PUBLICA || !process.env.VAPID_PRIVADA) return res.status(500).json({ erro: "VAPID não configurado" });
   webpush.setVapidDetails(process.env.VAPID_CONTATO || "mailto:contato@exemplo.com", process.env.VAPID_PUBLICA, process.env.VAPID_PRIVADA);
-  const site = process.env.SITE_URL || "https://aceleraenem.vercel.app";
+  const site = process.env.SITE_URL || "https://appaceleraenem.vercel.app";
 
   const { data: hoje, dow, min } = agora();
   const [prefs, subs, acessos] = await Promise.all([

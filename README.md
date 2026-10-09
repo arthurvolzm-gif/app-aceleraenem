@@ -1,6 +1,6 @@
 # Acelera Enem (aplicativos)
 
-Aplicativos do Acelera Enem, publicados em `aceleraenem.vercel.app`:
+Aplicativos do Acelera Enem, publicados em `appaceleraenem.vercel.app`:
 
 - `/` (e `/materias`): Plano ENEM (plano de estudos, resumos, progresso, exercícios, comunidade). Versão escura em `/escuro`.
 - `/redacao`: Arsenal de Redações (montador e correção por foto).

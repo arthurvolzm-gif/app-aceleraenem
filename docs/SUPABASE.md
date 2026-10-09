@@ -18,8 +18,8 @@ Para conferir: em **Table Editor** aparecem `dados_usuario`, `acessos` e `codigo
 
 ## 4. Endereço do site
 **Authentication → URL Configuration**:
-- Site URL: `https://aceleraenem.vercel.app`
-- Redirect URLs: `https://aceleraenem.vercel.app/**`
+- Site URL: `https://appaceleraenem.vercel.app`
+- Redirect URLs: `https://appaceleraenem.vercel.app/**`
 
 ## 5. Colar as chaves
 **Project Settings → API Keys**: copie a **Project URL** e a **Publishable key** (`sb_publishable_...`).
