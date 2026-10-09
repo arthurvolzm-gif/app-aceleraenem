@@ -8,6 +8,11 @@
 <script>if(!(/\/claro\/?$/.test(location.pathname)||/[?&]tema=claro/.test(location.search))){document.write('<meta name="theme-color" content="#000000">');}</script>
 <meta name="robots" content="noindex" />
 <link rel="manifest" href="/materias/manifest.json" />
+<link rel="apple-touch-icon" href="/shared/icone-180.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Acelera Enem" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <link rel="stylesheet" href="/materias/app.css" />
 <script>
 /* tema escuro é o padrão; a versão clara fica em /claro (ou ?tema=claro) */
@@ -82,7 +87,7 @@ async function notificarComunidade(){
   }catch(e){}
 }
 function avisoComunidade(){
-  if(!C.COMUNIDADE_LINK || !Acesso.tem('comunidade') || ls('mat_com_aviso',false) || document.getElementById('avisoCom')) return;
+  if(!C.COMUNIDADE_ATIVA || !C.COMUNIDADE_LINK || !Acesso.tem('comunidade') || ls('mat_com_aviso',false) || document.getElementById('avisoCom')) return;
   lsSet('mat_com_aviso',true);
   const d=document.createElement('div'); d.id='avisoCom'; d.className='modal-fundo';
   d.innerHTML=`<div class="modal-cx"><div class="e">👥</div><h3>Comunidade do Acelera Enem liberada</h3>
@@ -93,6 +98,76 @@ function avisoComunidade(){
   document.body.appendChild(d);
   toast('👥 Comunidade liberada: entre no grupo!');
   notificarComunidade();
+}
+/* ===== instalar o app na tela inicial (PWA): Android com botão, iPhone com passo a passo ===== */
+let _instalarEvt=null;
+window.addEventListener('beforeinstallprompt',e=>{ e.preventDefault(); _instalarEvt=e; });
+window.addEventListener('appinstalled',()=>{ _instalarEvt=null; try{ lsSet('mat_pwa_instalado',true); }catch(e){} fecharInstalar(); });
+function jaInstalado(){ try{ return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone===true || ls('mat_pwa_instalado',false); }catch(e){ return false; } }
+function plataforma(){
+  const ua=navigator.userAgent||'';
+  if(/iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints>1)) return {so:'ios', safari:!/CriOS|FxiOS|EdgiOS|OPiOS|GSA\//.test(ua)};
+  if(/Android/.test(ua)) return {so:'android'};
+  return {so:'outro'};
+}
+function fecharInstalar(){ const d=document.getElementById('modalInstalar'); if(d) d.remove(); }
+function instalarApp(){
+  if(!_instalarEvt){ mostrarInstalar(true); return; }
+  const ev=_instalarEvt; _instalarEvt=null;
+  ev.prompt(); ev.userChoice.then(r=>{ if(r&&r.outcome==='accepted'){ try{ lsSet('mat_pwa_instalado',true); }catch(e){} toast('App instalado! 🎉'); } }).catch(()=>{});
+  fecharInstalar();
+}
+function passosIos(){
+  const p=plataforma();
+  return `<div class="modal-cx"><div class="e">📲</div><h3>Adicione à tela de início</h3>
+    ${p.safari?'':'<p class="nota" style="margin-bottom:10px;"><b>Abra este endereço no Safari</b> para adicionar. No iPhone, o Safari é o navegador que instala o app.</p>'}
+    <ol style="text-align:left;margin:8px 0 14px 18px;line-height:1.7;font-size:14.5px;">
+      <li>Toque em <b>Compartilhar</b> <span style="font-size:18px;">⬆️</span>, o ícone de quadrado com seta na barra do Safari.</li>
+      <li>Role a lista e toque em <b>Adicionar à Tela de Início</b> ➕.</li>
+      <li>Toque em <b>Adicionar</b>, no canto de cima.</li>
+    </ol>
+    <p class="nota" style="margin-bottom:10px;">Depois é só abrir o Acelera Enem pelo ícone na tela inicial.</p>
+    <button class="btn" onclick="fecharInstalar()">Entendi</button></div>`;
+}
+function mostrarInstalar(forcar){
+  if(jaInstalado()) return;
+  const p=plataforma(); if(p.so==='outro') return;
+  fecharInstalar();
+  const d=document.createElement('div'); d.id='modalInstalar'; d.className='modal-fundo';
+  let corpo;
+  if(p.so==='ios'){
+    corpo=`<div class="modal-cx"><div class="e">📲</div><h3>Instale o Acelera Enem no seu iPhone</h3>
+      <p>Abra o app direto da tela inicial, como um aplicativo, sem digitar o endereço.</p>
+      <button class="btn" onclick="fecharInstalar();abrirPassosIos()">Adicionar à tela de início</button>
+      <button class="btn-link" onclick="fecharInstalar()">Agora não</button></div>`;
+  } else if(_instalarEvt && !forcar){
+    corpo=`<div class="modal-cx"><div class="e">📲</div><h3>Instale o Acelera Enem no seu celular</h3>
+      <p>Abra o app direto da tela inicial, como um aplicativo, sem digitar o endereço.</p>
+      <button class="btn" onclick="instalarApp()">Instalar o app</button>
+      <button class="btn-link" onclick="fecharInstalar()">Agora não</button></div>`;
+  } else {
+    corpo=`<div class="modal-cx"><div class="e">📲</div><h3>Instale o Acelera Enem no seu celular</h3>
+      <ol style="text-align:left;margin:8px 0 14px 18px;line-height:1.7;font-size:14.5px;">
+        <li>Toque no menu <b>⋮</b> do navegador (canto de cima).</li>
+        <li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>
+        <li>Confirme em <b>Instalar</b>.</li>
+      </ol>
+      <button class="btn" onclick="fecharInstalar()">Entendi</button></div>`;
+  }
+  d.innerHTML=corpo; d.addEventListener('click',e=>{ if(e.target===d) fecharInstalar(); });
+  document.body.appendChild(d);
+}
+function abrirPassosIos(){ fecharInstalar(); const d=document.createElement('div'); d.id='modalInstalar'; d.className='modal-fundo'; d.innerHTML=passosIos(); d.addEventListener('click',e=>{ if(e.target===d) fecharInstalar(); }); document.body.appendChild(d); }
+/* aparece uma vez, na primeira vez que a pessoa entra no app (some se já estiver instalado) */
+function avisoInstalar(){
+  if(jaInstalado() || ls('mat_pwa_aviso',false) || document.getElementById('modalInstalar') || document.getElementById('modalCompra')) return;
+  if(plataforma().so==='outro') return;
+  lsSet('mat_pwa_aviso',true);
+  mostrarInstalar(false);
+}
+function cardInstalar(){
+  if(jaInstalado() || plataforma().so==='outro') return '';
+  return `<div class="card" style="padding:0;overflow:hidden;"><button class="atalho" onclick="mostrarInstalar(false)"><span class="ic">📲</span><div><b>Instalar o app no celular</b><span>${plataforma().so==='ios'?'Adicionar à tela de início pelo Safari':'Abrir direto da tela inicial'}</span></div><span class="seta">${ic('chevR',2.2)}</span></button></div>`;
 }
 function fecharCompra(){ const d=document.getElementById('modalCompra'); if(d) d.remove(); }
 async function jaComprei(){
@@ -330,7 +405,7 @@ function notificacoes(){
   if(d) L.push({id:'enem'+h, ic:'⏳', t:`Faltam ${d} dias para o ENEM`, s:'Continue no seu plano de estudos.', r:'plano'});
   if(!Acesso.tem('exercicios')) L.push({id:'simpromo'+semanaISO(), ic:'📝', t:'Simulado da semana bloqueado', s:'Desbloqueie Exercícios e simulados e receba um aviso toda semana para treinar.', r:'exercicios'});
   else if(!(ls('mat_simulado_pref',null)||{}).dia && (ls('mat_simulado_pref',null)||{}).dia!==0) L.push({id:'simesc', ic:'📝', t:'Escolha o dia do seu simulado', s:'Defina o dia e a hora do simulado semanal.', r:'lembretes'});
-  L.push({id:'com'+semanaISO(), ic:'👥', t:'Comunidade de estudantes liberada', s:Acesso.tem('comunidade')?'Grátis por enquanto: entre no grupo e troque dúvidas e dicas com quem também está estudando para o ENEM.':'Estude junto: conheça a comunidade de estudantes do ENEM.', r:'comunidade'});
+  if(C.COMUNIDADE_ATIVA) L.push({id:'com'+semanaISO(), ic:'👥', t:'Comunidade de estudantes liberada', s:Acesso.tem('comunidade')?'Grátis por enquanto: entre no grupo e troque dúvidas e dicas com quem também está estudando para o ENEM.':'Estude junto: conheça a comunidade de estudantes do ENEM.', r:'comunidade'});
   if(!('Notification' in window) || Notification.permission!=='granted') L.push({id:'lemb', ic:'⏰', t:'Ative os lembretes', s:`Receba um aviso às ${p.hora} nos seus dias de estudo.`, r:'lembretes'});
   const lid = ls('mat_notif_lidas',[]);
   return L.map(n=>Object.assign(n,{nova:!lid.includes(n.id)}));
@@ -863,6 +938,7 @@ function telaPerfil(){
       <div class="linha"><span class="e">⏱️</span><div><b>${fmtMin(p.minutos)} por dia</b><span>${p.dias.length} dias por semana</span></div></div>
       <div class="linha"><span class="e">📌</span><div><b>Prioridades</b><span>${p.dificeis.length?p.dificeis.map(id=>mat(id).nome).join(', '):'Todas as matérias'}</span></div></div>
     </div>
+    ${cardInstalar()}
     <div class="card" style="padding:0;overflow:hidden;">
       <button class="atalho" onclick="irAjustar()"><span class="ic">${ic('engrenagem',1.9)}</span><div><b>Ajustar o meu plano</b><span>Curso, meta, matérias, tempo e dias</span></div><span class="seta">${ic('chevR',2.2)}</span></button>
       <button class="atalho" onclick="irPara('lembretes')"><span class="ic">${ic('alarme',1.9)}</span><div><b>Lembretes</b><span>Todo dia de estudo às ${S(p.hora)}</span></div><span class="seta">${ic('chevR',2.2)}</span></button>
@@ -956,13 +1032,14 @@ async function desativarPush(){
 function cardPush(){
   const sup=pushSuportado();
   return `<div class="card"><div class="card-tt">📲 Notificações no celular</div>
-    <p class="nota" style="margin-bottom:12px;">Receba os avisos de estudo, do simulado semanal e da comunidade direto no celular, mesmo com o app fechado.</p>
+    <p class="nota" style="margin-bottom:12px;">Receba os avisos de estudo e do simulado semanal direto no celular, mesmo com o app fechado.</p>
     ${sup?`<button class="btn" id="pushBtn" onclick="ativarPush()">Ativar notificações no celular</button>`:'<p class="nota">No iPhone, toque em Compartilhar e em "Adicionar à Tela de Início", abra o app por lá e ative aqui.</p>'}
     <p class="nota" id="pushEst" style="margin-top:10px;"></p></div>`;
 }
 async function pushMarcar(){ const b=document.getElementById('pushBtn'); if(!b) return; if(await pushAtivo()){ b.textContent='Desativar notificações no celular'; b.className='btn sec'; b.onclick=desativarPush; const e=document.getElementById('pushEst'); if(e) e.textContent='Ativadas neste aparelho.'; } }
 
 function telaComunidade(){
+  if(!C.COMUNIDADE_ATIVA){ location.hash='#inicio'; return; }
   const tem=Acesso.tem('comunidade'), link=C.COMUNIDADE_LINK;
   app.innerHTML = `${barraTopo('👥 Comunidade',true)}<div class="tela fade"><div class="card bloq"><div class="e">👥</div><h2>Comunidade de estudantes</h2>
     <p>Um espaço para tirar dúvidas, trocar dicas de estudo e se manter motivado até o ENEM, junto com outros estudantes.</p>
@@ -1060,7 +1137,7 @@ function render(){
   if(!temPlano){ nav.style.display='none'; if(pt[0]==='questao') return telaQuestao(); if(pt[0]==='erros') return telaErros(); if(pt[0]==='treino') return iniciarQ('treino',null,pt[2]); return telaExercicios(); }
   if(!perfil()){ if(!ob) iniciarOnboarding(false); else telaOnboarding(); return; }
   { const pf=perfil(); if(pf.planoV!==3){ pf.plano=gerarPlano(pf); pf.planoV=3; lsSet('mat_perfil',pf); const A=ls('mat_atrib',{}), h=hojeISO(); Object.keys(A).forEach(k=>{ if(k>=h) delete A[k]; }); lsSet('mat_atrib',A); } }
-  nav.style.display=''; setTimeout(avisoComunidade,900);
+  nav.style.display=''; setTimeout(avisoInstalar,1000); setTimeout(avisoComunidade,1500);
   const aba = {inicio:'inicio',notificacoes:'inicio',timer:'plano',ajustar:'plano',plano:'plano',resumos:'resumos',materia:'resumos',tema:'resumos',progresso:'progresso',erros:'progresso'}[pt[0]] || 'perfil';
   nav.querySelectorAll('button').forEach(b=>b.classList.toggle('on', b.dataset.r===aba));
   const T = { comunidade:telaComunidade, material:()=>telaMaterialDoc(pt[1]), ajustar:telaAjustar, plano:telaPlano, resumos:telaResumos, progresso:telaProgresso, perfil:telaPerfil, notificacoes:telaNotificacoes, lembretes:telaLembretes, materiais:telaMateriais, exercicios:telaExercicios, questao:telaQuestao, erros:telaErros };

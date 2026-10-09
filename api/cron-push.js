@@ -96,9 +96,9 @@ export default async function handler(req, res) {
       await enviar(p.user_id, { titulo: "📝 Simulado semanal bloqueado", corpo: "Desbloqueie Exercícios e simulados para treinar toda semana no estilo do ENEM.", url: `${site}/materias#exercicios`, tag: "simulado-promo" });
       await marcar(p.user_id, { ultima_promo_simulado: hoje });
     }
-    /* 3. comunidade (1 vez por semana) */
-    if (dow === DIA_COMUNIDADE && venceu(HORA_COMUNIDADE, min) && (!p.ultima_comunidade || diasEntre(p.ultima_comunidade, hoje) >= 6)) {
-      const tem_c = true; // comunidade grátis por enquanto (ver LIBERADO_COM_CONTA em shared/config.js)
+    /* 3. comunidade (1 vez por semana). Desligada por padrão: ligue com a variável COMUNIDADE_ATIVA=1 na Vercel. */
+    if (process.env.COMUNIDADE_ATIVA === "1" && dow === DIA_COMUNIDADE && venceu(HORA_COMUNIDADE, min) && (!p.ultima_comunidade || diasEntre(p.ultima_comunidade, hoje) >= 6)) {
+      const tem_c = tem.has("comunidade");
       await enviar(p.user_id, {
         titulo: "👥 Comunidade de estudantes",
         corpo: tem_c ? "Grátis por enquanto: entre no grupo e troque dúvidas e dicas com quem também está estudando para o ENEM." : "Estude junto: conheça a comunidade de estudantes do ENEM.",

@@ -10,7 +10,7 @@ window.ENEM_CONFIG = {
 
   /* produtos que abrem só de estar logado (sem pedir código).
      Correção por foto e exercícios ficam de fora: continuam pagos à parte. */
-  LIBERADO_COM_CONTA: ['comunidade'],   // liberado só com conta: comunidade (grátis por enquanto). O resto depende da compra (webhook da Zuptos)
+  LIBERADO_COM_CONTA: [],   // vazio: tudo depende da compra (webhook da Zuptos). Para liberar a comunidade de graça, ponha 'comunidade' aqui e COMUNIDADE_ATIVA: true
 
   /* links de checkout usados nos botões "Desbloquear" dentro dos apps.
      Vazio = o botão mostra um aviso em vez de levar ao checkout. */
@@ -24,6 +24,7 @@ window.ENEM_CONFIG = {
   /* chave PÚBLICA do Web Push (gere o par com: npx web-push generate-vapid-keys; a privada vai só na Vercel) */
   VAPID_PUBLICA: 'BMFQKSgVwR5bnh6g8oKwEj3M26OeTo3NpC9QrPkS9Qux9T6FOJG-zERXHkyi2npX4POjmQ63G5pPdFfW9CkWfxY',
   /* link da comunidade (abre depois da compra) */
+  COMUNIDADE_ATIVA: false,   // false = comunidade desligada no app (sem aviso, sem notificação, sem tela). Ligue quando houver compras suficientes.
   COMUNIDADE_LINK: 'https://chat.whatsapp.com/JHuA0CMoiOqF2SmaaCYZRv?s=cl&p=a&mlu=4&ilr=4',
   SUPORTE_EMAIL: '',   // e-mail de suporte mostrado nas telas de acesso
   DATA_ENEM: '2026-11-08' // CONFIRME no edital do INEP
