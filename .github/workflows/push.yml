@@ -1,7 +1,8 @@
 # Dispara o envio das notificações no celular (api/cron-push) a cada 30 minutos.
 # Configure em Settings > Secrets and variables > Actions:
-#   CRON_URL    = https://SEU-SITE.vercel.app/api/cron-push
+#   CRON_URL    = https://appaceleraenem.vercel.app/api/cron-push
 #   CRON_SECRET = o mesmo valor da variável CRON_SECRET na Vercel
+# Sem os dois segredos, o workflow só avisa e termina sem erro (sem e-mail de falha).
 name: Notificações push
 on:
   schedule:
@@ -12,5 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Chamar o servidor
+        env:
+          CRON_URL: ${{ secrets.CRON_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          curl -fsS --max-time 60 "${{ secrets.CRON_URL }}?token=${{ secrets.CRON_SECRET }}"
+          if [ -z "$CRON_URL" ] || [ -z "$CRON_SECRET" ]; then
+            echo "::notice::CRON_URL e CRON_SECRET ainda não foram configurados nos Secrets. Nada a fazer."
+            exit 0
+          fi
+          curl -fsS --max-time 60 "${CRON_URL}?token=${CRON_SECRET}"
