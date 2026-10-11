@@ -27,5 +27,6 @@ window.ENEM_CONFIG = {
   COMUNIDADE_ATIVA: false,   // false = comunidade desligada no app (sem aviso, sem notificação, sem tela). Ligue quando houver compras suficientes.
   COMUNIDADE_LINK: 'https://chat.whatsapp.com/JHuA0CMoiOqF2SmaaCYZRv?s=cl&p=a&mlu=4&ilr=4',
   SUPORTE_EMAIL: '',   // e-mail de suporte mostrado nas telas de acesso
-  DATA_ENEM: '2026-11-08' // CONFIRME no edital do INEP
+  DATA_ENEM: '2026-11-08', // CONFIRME no edital do INEP
+  DATA_ENEM_2: '2026-11-15' // 2º dia (Natureza e Matemática). CONFIRME no edital do INEP
 };
